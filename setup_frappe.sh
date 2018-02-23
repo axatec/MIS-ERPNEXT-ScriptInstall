@@ -240,7 +240,7 @@ install_wkhtmltopdf_centos () {
 		return 0
 	fi
 	RPM="wkhtmltox-0.12.2.1_linux-$OS$OS_VER-$WK_ARCH.rpm"
-	run_cmd wget http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/$RPM
+	run_cmd wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.2.1/$RPM
 	rpm --quiet -q wkhtmltox || run_cmd rpm -Uvh $RPM
 }
 
@@ -302,7 +302,7 @@ get_password() {
 configure_mariadb_centos() {
 	# Required only for CentOS, Ubuntu and Debian will show dpkg configure screen to set the password
 	if [ $OS == "centos" ]; then
-		mysqladmin -u root password $MSQ_PASS
+		mysqladmin -u root -p$MSQ_PASS password $MSQ_PASS
 	fi
 }
 
@@ -431,6 +431,7 @@ add_user() {
 		echo $FRAPPE_USER:$FRAPPE_USER_PASS | chpasswd
 		chmod o+x /home/$FRAPPE_USER
 		chmod o+r /home/$FRAPPE_USER
+		usermod -aG wheel $FRAPPE_USER
 	fi
 }
 
@@ -475,6 +476,7 @@ main() {
 	echo "Frappe/ERPNext is installed successfully$RUNNING."
 	print_msg > ~/frappe_passwords.txt
 	print_msg
+	usermod -G '' $FRAPPE_USER
 	echo
 	echo "The passwords are also stored at ~/frappe_passwords.txt"
 	echo "You can remove this file after making a note of the passwords."
